@@ -1,10 +1,12 @@
-# 🎈 Blank app template
+# 🎈 re-plitter
 
-A simple Streamlit app template for you to modify!
+This web app is designed to ease your (or only me?) bill splitting problems, and most importantly - installation-free! 
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://blank-app-template.streamlit.app/)
+How to use the app:
 
-### How to run it on your own machine
+1. Insert as many names to the table whom you will be splitting the receipt with
+2. Add the item value, item name and the people you are sharing it with
+3. Press enter and get your splitted bill calculated in a jiffy! 
 
 1. Install the requirements
 
@@ -17,3 +19,13 @@ A simple Streamlit app template for you to modify!
    ```
    $ streamlit run streamlit_app.py
    ```
+
+# Development
+# To Dos:
+- [x] add items column to list the items being shared among the parties
+- [] add percentage share feature 
+- [] use of dynamic tags to edit the share 
+   - not yet possible due to limitation on streamlit development
+- [] add image upload for ease of input references
+- [] cache the page 
+- [] integrate receipt reader (very far in the future)

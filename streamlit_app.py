@@ -41,7 +41,7 @@ item_text= bills.empty()
 if st.session_state.persons.empty:
     bills.write('')
 else:
-    bills.write('For who is this item is split among?')
+    bills.write('Who is this item is split among?')
 for x in st.session_state.persons['Name']:
     if 'shareholders' not in st.session_state:
         st.session_state.shareholders=np.array([])
