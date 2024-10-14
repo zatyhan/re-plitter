@@ -51,7 +51,7 @@ for x in st.session_state.persons['Name']:
         st.session_state.shareholders=set()
     if bills.checkbox(x):
         st.session_state.shareholders.add(x)
-
+git 
 shareholder_text= bills.empty()
 split_item= bills.form_submit_button("Split this item!")
 
