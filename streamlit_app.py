@@ -16,7 +16,7 @@ if 'persons' not in st.session_state:
 def add_splitter(name):
     # splitter.write('jenny' in st.session_state.persons.values)
     if name not in st.session_state.persons.values and name.strip()!= '':
-        person= pd.DataFrame({"Name": [name], "Items":[[]], "Total": [0]})
+        person= pd.DataFrame({"Name": [name], "Items":[[]], "Total": [float(0.00)]})
         st.session_state.persons= pd.concat([st.session_state.persons, person], ignore_index=True)
         # st.write(persons)
     elif name.strip() == '' :
@@ -33,7 +33,7 @@ if submit_name:
     persons= add_splitter(name)
 
 bills= st.form('bills', clear_on_submit=True)
-running_total= bills.number_input('Item value', key='running_total', min_value=0, placeholder=0.00)
+running_total= bills.number_input('Item value', key='running_total', step=0.01, format="%0.2f", min_value=0.00, placeholder=0.00)
 total_text= bills.empty()
 item= bills.text_input('Which item is this for?', key='item', placeholder='water')
 item_text= bills.empty()
@@ -80,7 +80,7 @@ if st.session_state.persons.empty:
     display.write("")
     display.html("<div style='font-weight: bold; font-size: 20px'> There\'s no one here yet &#128546 </div>")
 else:
-    display.dataframe(st.session_state.persons, hide_index=True, use_container_width=True)
+    display.dataframe(st.session_state.persons.round({'Total': 2}), hide_index=True, use_container_width=True)
 
 if st.button("Reset calculator!"):
     del st.session_state.persons
