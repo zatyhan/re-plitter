@@ -17,15 +17,15 @@ How to use the app:
 2. Run the app
 
    ```
-   $ streamlit run streamlit_app.py
+   $ streamlit run replitter.py
    ```
 
 # Development
 # To Dos:
 - [x] add items column to list the items being shared among the parties
-- [] add percentage share feature 
-- [] use of dynamic tags to edit the share 
+- [ ] add percentage share feature 
+- [ ] use of dynamic tags to edit the share 
    - not yet possible due to limitation on streamlit development
-- [] add image upload for ease of input references
-- [] cache the page 
-- [] integrate receipt reader (very far in the future)
+- [ ] add image upload for ease of input references
+- [ ] cache the page 
+- [ ] integrate receipt reader (very far in the future)
