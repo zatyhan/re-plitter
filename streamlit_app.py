@@ -51,7 +51,7 @@ for x in st.session_state.persons['Name']:
         st.session_state.shareholders=set()
     if bills.checkbox(x):
         st.session_state.shareholders.add(x)
-git 
+
 shareholder_text= bills.empty()
 split_item= bills.form_submit_button("Split this item!")
 
@@ -79,7 +79,6 @@ if split_item:
                     st.session_state.item_list = pd.concat([st.session_state.item_list, item_detail], ignore_index=True)
                     split_val= st.session_state.running_total/len(st.session_state.shareholders)
                     for shareholder in st.session_state.shareholders:
-                        # st.write(shareholder)
                         st.session_state.persons.loc[st.session_state.persons['Name']==shareholder, 'Total'] += split_val
                         st.session_state.persons.loc[st.session_state.persons['Name']==shareholder, 'Items'].item().append(st.session_state.item)
                 del st.session_state.shareholders
