@@ -23,7 +23,8 @@ How to use the app:
 # Development
 # To Dos:
 - [x] add items column to list the items being shared among the parties
-- [ ] display items list together with their price and number of people to split with
+- [x] display items list together with their price and number of people to split with for sanity check
+- [ ] add option of splitting option - equal or by percentage share 
 - [ ] add percentage share feature 
 - [ ] use of dynamic tags to edit the share 
    - not yet possible due to limitation on streamlit development
