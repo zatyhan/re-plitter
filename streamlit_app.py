@@ -82,18 +82,30 @@ if split_item:
                         st.session_state.persons.loc[st.session_state.persons['Name']==shareholder, 'Total'] += split_val
                         st.session_state.persons.loc[st.session_state.persons['Name']==shareholder, 'Items'].item().append(st.session_state.item)
                 del st.session_state.shareholders
-        
+
+with st.form('extras', clear_on_submit=True):
+    percent= st.number_input(label='Percentage (***optional***)', min_value=0.00, max_value=100.00, step=0.01, key='percentage')
+    if st.form_submit_button('Add additional charge to the tab') and len(st.session_state.persons)>0:
+        # st.write('ok')
+        st.session_state.persons['Add. Charge']= percent
+        st.write(st.session_state.persons)
+
 display= st.container()
 if st.session_state.persons.empty:
     display.write("")
     display.html("<div style='font-weight: bold; font-size: 20px'> There\'s no one here yet &#128546 </div>")
 else:
+    # calculate total is there's additional charge
+    if 'Add. Charge' in st.session_state.persons.columns:
+        st.session_state.persons['Grand Total']= round((1+ 0.01*st.session_state.persons['Add. Charge'])*st.session_state.persons['Total'], 2)
+
     # reset the index
     st.session_state.item_list.index= st.session_state.item_list.index + 1
     st.session_state.persons.index= st.session_state.persons.index + 1 
     display.subheader('List of items')
     display.dataframe(st.session_state.item_list, use_container_width=True)
 
+    
     display.subheader('Sharers')
     display.dataframe(st.session_state.persons.round({'Total': 2}), use_container_width=True)
 
