@@ -17,6 +17,7 @@ if 'item_list' not in st.session_state:
                                           'Number of people to split with': [],
                                           'Item amount': []})
 
+
 def add_splitter(name):
     # splitter.write('jenny' in st.session_state.persons.values)
     if name not in st.session_state.persons.values and name.strip()!= '':
@@ -88,51 +89,64 @@ with st.form('extras', clear_on_submit=True):
     extra_type= st.selectbox(label='What is this charge for?', options=['Discount', 'Tax/Additional Charge'])
     split_type= st.selectbox(label='How do you want this value split?', options=['Percentage', 'Equal split'])
 
-    if split_type=='Percentage':
-        extra_val = st.number_input(label='Percentage (***optional***)', min_value=0.00, max_value=100.00, step=0.01, key='extra_val')
-    else: 
-        extra_val = st.number_input(label='Value (***optional***)', min_value=0.00, step=0.01, key='extra_val')
-
+    # if split_type=='Percentage':
+    #     extra_val = st.number_input(label='Value (***optional***)', min_value=0.00, max_value=100.00, step=0.01, key='extra_val')
+    # else: 
+    extra_val = st.number_input(label='Value (***optional***)', min_value=0.00, step=0.01, key='extra_val')
+    st.session_state.discount= (0, None)
+    st.session_state.add_charge= (0, None)
 
     if st.form_submit_button('Add to tab') and len(st.session_state.persons)>0:
         if extra_type=='Discount':
-            st.session_state.persons['Discount']= extra_val # remove this line
+            # st.session_state.persons['Discount']= extra_val # remove this line
             st.session_state.discount= (extra_val, split_type)
         elif extra_type=='Tax/Additional Charge': 
-            if 'Add. Charge' not in st.session_state.persons.columns: #remove this line
-                st.session_state.persons['Add. Charge']= extra_val 
-            else: 
-                st.session_state.persons['Add. Charge']+= extra_val 
-
+            # if 'Add. Charge' not in st.session_state.persons.columns: #remove this line
+            #     st.session_state.persons['Add. Charge']= extra_val 
+            # else: 
+            #     st.session_state.persons['Add. Charge']+= extra_val 
             st.session_state.add_charge= (extra_val, split_type)
 
-def grand_total(discount=False, add_charge=False):
-    total_disc= 0
-    total_add_charge=0
+def grand_total(discount, add_charge):
+
     if 'Discount' not in st.session_state.persons: 
         total_disc= 0
     else: 
         total_disc= st.session_state.persons['Discount']
     
-    
+    if 'Add. Charge' not in st.session_state.persons: 
+        total_charge= 0
+    else: 
+        total_charge= st.session_state.persons['Add. Charge']
+
     if discount: 
         val, split_type= st.session_state.discount
+        # st.write(val, split_type)
         if split_type=='Percentage':
-            total_disc= 0.01*val*st.session_state.persons['Total']
-            st.session_state.persons['Discount (%)']= val
-        else:
-            total_disc= val/len(st.session_state.persons)  
-            st.session_state.persons['Discount']= total_disc if 'Discount' not in st.session_state.persons\
-                                                else st.session_state.persons['Discount']+total_disc
+            total_disc+= 0.01*val*st.session_state.persons['Total']
+        elif split_type=='Equal split':
+            total_disc+= val/len(st.session_state.persons)  
         
+        st.session_state.persons['Discount']= round(total_disc,2)
+        st.session_state.discount= (0, 'Percentage')
+    
     if add_charge:
+        # st.write('hi')
         val, split_type= st.session_state.add_charge
         if split_type=='Percentage':
-            total_add_charge= 0.01*val*st.session_state.persons['Total']
-        else:
-            total_add_charge= val/len(st.session_state.persons)
-            
-    return 
+            total_charge+= 0.01*val*st.session_state.persons['Total']
+        elif split_type=='Equal split':
+            total_charge+= val/len(st.session_state.persons)
+        
+        st.session_state.persons['Add. Charge']= round(total_charge, 2)
+        # st.write(st.session_state.persons['Add. Charge'])
+        st.session_state.add_charge= (0, 'Percentage')
+
+
+    grand_total= round(st.session_state.persons['Total'] - total_disc + total_charge, 2)
+    # st.write(grand_total)
+    
+    return grand_total
         
 
 display= st.container()
@@ -141,23 +155,21 @@ if st.session_state.persons.empty:
     display.html("<div style='font-weight: bold; font-size: 20px'> There\'s no one here yet &#128546 </div>")
 else:
     # calculate total is there's additional charge
-    if 'Discount (%)' in st.session_state.persons.columns and 'Add. Charge (%)' in st.session_state.persons.columns and st.session_state.extra_val=='Percentage':
-        st.session_state.persons['Grand Total']= round((1+ 0.01*st.session_state.persons['Add. Charge (%)'])*\
-                                                       (1-0.01*st.session_state.persons['Discount (%)'])*st.session_state.persons['Total'], 2)
-        column_order= ['Name', 'Items', 'Total', 'Discount (%)', 'Add. Charge (%)', 'Grand Total']
-    elif 'Discount (%)' in st.session_state.persons.columns:
-        st.session_state.persons['Grand Total']=round((1-0.01*st.session_state.persons['Discount (%)'])*st.session_state.persons['Total'], 2)
-        column_order= ['Name', 'Items', 'Total', 'Discount (%)', 'Grand Total']
+    st.session_state.persons['Grand Total']= grand_total(st.session_state.discount[1], st.session_state.add_charge[1])
 
-    elif 'Add. Charge (%)' in st.session_state.persons.columns:
-        st.session_state.persons['Grand Total']= round((1+ 0.01*st.session_state.persons['Add. Charge (%)'])*st.session_state.persons['Total'], 2)
-        column_order= ['Name', 'Items', 'Total', 'Add. Charge (%)', 'Grand Total']
+    if 'Discount' in st.session_state.persons.columns and 'Add. Charge' in st.session_state.persons.columns:
+        column_order= ['Name', 'Items', 'Total', 'Discount', 'Add. Charge', 'Grand Total']
+    elif 'Discount' in st.session_state.persons.columns :
+        column_order= ['Name', 'Items', 'Total', 'Discount', 'Grand Total']
+
+    elif 'Add. Charge' in st.session_state.persons.columns :
+        column_order= ['Name', 'Items', 'Total', 'Add. Charge', 'Grand Total']
 
     else: 
         column_order=['Name', 'Items', 'Total']
     # reset the index
-    st.session_state.item_list.index= st.session_state.item_list.index + 1
-    st.session_state.persons.index= st.session_state.persons.index + 1 
+    st.session_state.item_list.index= pd.Index(range(1, len(st.session_state.item_list)+1))
+    st.session_state.persons.index= pd.Index(range(1, len(st.session_state.persons)+1))
     display.subheader('List of items')
     display.dataframe(st.session_state.item_list, use_container_width=True)
 
